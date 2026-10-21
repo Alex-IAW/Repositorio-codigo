@@ -1,0 +1,246 @@
+<- outputEvent
+QC {
+  seq: 0,
+  type: 'event',
+  event: 'output',
+  body: {
+    category: 'stdout',
+    output: 'Listening to Xdebug on port 0.0.0.0:9003 ...\n'
+  }
+}
+
+Listening to Xdebug on port 0.0.0.0:9003 ...
+<- launchResponse
+MC {
+  seq: 0,
+  type: 'response',
+  request_seq: 2,
+  command: 'launch',
+  success: true
+}
+
+new connection 1 from from 172.20.0.2
+<- threadEvent
+XC {
+  seq: 0,
+  type: 'event',
+  event: 'thread',
+  body: { reason: 'started', threadId: 1 }
+}
+
+<- initializedEvent
+$C { seq: 0, type: 'event', event: 'initialized' }
+
+-> setBreakpointsRequest
+{
+  command: 'setBreakpoints',
+  arguments: {
+    source: {
+      name: 'index.php',
+      path: '/home/usuario/mi-proyecto-php/app/index.php'
+    },
+    lines: [ 6 ],
+    breakpoints: [ { line: 6 } ],
+    sourceModified: false
+  },
+  type: 'request',
+  seq: 3
+}
+
+-> setFunctionBreakpointsRequest
+{
+  command: 'setFunctionBreakpoints',
+  arguments: { breakpoints: [] },
+  type: 'request',
+  seq: 4
+}
+
+-> setExceptionBreakpointsRequest
+{
+  command: 'setExceptionBreakpoints',
+  arguments: { filters: [ 'Error', 'Uncaught Exception' ] },
+  type: 'request',
+  seq: 5
+}
+
+<- setFunctionBreakpointsResponse
+MC {
+  seq: 0,
+  type: 'response',
+  request_seq: 4,
+  command: 'setFunctionBreakpoints',
+  success: true,
+  body: { breakpoints: [] }
+}
+
+<- setBreakpointsResponse
+MC {
+  seq: 0,
+  type: 'response',
+  request_seq: 3,
+  command: 'setBreakpoints',
+  success: true,
+  body: { breakpoints: [ { id: 1, verified: true, line: 6 } ] }
+}
+
+<- setExceptionBreakpointsResponse
+MC {
+  seq: 0,
+  type: 'response',
+  request_seq: 5,
+  command: 'setExceptionBreakpoints',
+  success: true
+}
+
+-> threadsRequest
+{ command: 'threads', type: 'request', seq: 6 }
+
+<- threadsResponse
+MC {
+  seq: 0,
+  type: 'response',
+  request_seq: 6,
+  command: 'threads',
+  success: true,
+  body: { threads: [ qC { id: 1, name: 'Request 1 (2:34:24 PM)' } ] }
+}
+
+-> configurationDoneRequest
+{ command: 'configurationDone', type: 'request', seq: 7 }
+
+<- configurationDoneResponse
+MC {
+  seq: 0,
+  type: 'response',
+  request_seq: 7,
+  command: 'configurationDone',
+  success: true
+}
+
+<- stoppedEvent
+YC {
+  seq: 0,
+  type: 'event',
+  event: 'stopped',
+  body: { reason: 'breakpoint', threadId: 1, allThreadsStopped: false }
+}
+
+-> threadsRequest
+{ command: 'threads', type: 'request', seq: 8 }
+
+<- threadsResponse
+MC {
+  seq: 0,
+  type: 'response',
+  request_seq: 8,
+  command: 'threads',
+  success: true,
+  body: { threads: [ qC { id: 1, name: 'Request 1 (2:34:24 PM)' } ] }
+}
+
+-> threadsRequest
+{ command: 'threads', type: 'request', seq: 9 }
+
+<- threadsResponse
+MC {
+  seq: 0,
+  type: 'response',
+  request_seq: 9,
+  command: 'threads',
+  success: true,
+  body: { threads: [ qC { id: 1, name: 'Request 1 (2:34:24 PM)' } ] }
+}
+
+-> stackTraceRequest
+{
+  command: 'stackTrace',
+  arguments: { threadId: 1, startFrame: 0, levels: 20 },
+  type: 'request',
+  seq: 10
+}
+
+<- stackTraceResponse
+MC {
+  seq: 0,
+  type: 'response',
+  request_seq: 10,
+  command: 'stackTrace',
+  success: true,
+  body: {
+    stackFrames: [
+      {
+        id: 1,
+        name: '{main}',
+        source: {
+          name: 'index.php',
+          path: 'file:///home/usuario/mi-proyecto-php/app/index.php'
+        },
+        line: 6,
+        column: 1
+      }
+    ]
+  }
+}
+
+-> scopesRequest
+{
+  command: 'scopes',
+  arguments: { frameId: 1 },
+  type: 'request',
+  seq: 11
+}
+
+<- scopesResponse
+MC {
+  seq: 0,
+  type: 'response',
+  request_seq: 11,
+  command: 'scopes',
+  success: true,
+  body: {
+    scopes: [
+      UC { name: 'Locals', variablesReference: 1, expensive: false },
+      UC {
+        name: 'Superglobals',
+        variablesReference: 2,
+        expensive: false
+      },
+      UC {
+        name: 'User defined constants',
+        variablesReference: 3,
+        expensive: false
+      }
+    ]
+  }
+}
+
+-> variablesRequest
+{
+  command: 'variables',
+  arguments: { variablesReference: 1 },
+  type: 'request',
+  seq: 12
+}
+
+<- variablesResponse
+MC {
+  seq: 0,
+  type: 'response',
+  request_seq: 12,
+  command: 'variables',
+  success: true,
+  body: {
+    variables: [
+      {
+        name: '$variableParaDepurar',
+        value: 'uninitialized',
+        type: 'uninitialized',
+        presentationHint: {},
+        indexedVariables: null,
+        variablesReference: 0,
+        evaluateName: '$variableParaDepurar'
+      }
+    ]
+  }
+}
+
